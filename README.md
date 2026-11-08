@@ -2,7 +2,7 @@
 
 CaseCite — open-source, self-hosted legal RAG: caselaw research and document analysis for law firms. Deploy on Railway with one click.
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template?template=PENDING)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/pTbByj)
 
 This repository packages [CaseCite](https://github.com/thomasunise/casecite) v1.3.0 (Apache-2.0) for Railway. It is an independent community packaging, not affiliated with or endorsed by the CaseCite project. The image is built by GitHub Actions from upstream's own root `Dockerfile` at tag v1.3.0, plus a tiny overlay of Railway defaults (see `Dockerfile`).
 
@@ -32,7 +32,7 @@ This repository packages [CaseCite](https://github.com/thomasunise/casecite) v1.
 | `REDIS_URL` | `redis://default:…@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379` | Redis (private network) |
 | `ALLOWED_HOSTS` / `CORS_ORIGINS` / `FRONTEND_URL` | your Railway domain | Host allow-list, CORS and links in emails |
 
-Baked image defaults (override as variables if needed): `DB_SSL=internal`, `DISK_ENCRYPTION_ACKNOWLEDGED=true` (Railway volumes are encrypted at rest), `TRUSTED_PROXIES=127.0.0.1,100.64.0.0/10`, `VECTOR_DB=chroma`, `ALLOW_REGISTRATION=false`.
+Baked image defaults (override as variables if needed): `DB_SSL=internal`, `healthcheck.railway.app` auto-appended to `ALLOWED_HOSTS` (Railway healthcheck), nginx also listening on IPv6 and on `$PORT`, `DISK_ENCRYPTION_ACKNOWLEDGED=true` (Railway volumes are encrypted at rest), `TRUSTED_PROXIES=127.0.0.1,100.64.0.0/10`, `VECTOR_DB=chroma`, `ALLOW_REGISTRATION=false`.
 
 ## Notes
 
