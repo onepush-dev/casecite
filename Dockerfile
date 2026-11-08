@@ -10,6 +10,7 @@
 #                            Railway volumes are encrypted at rest.
 #   TRUSTED_PROXIES          nginx (127.0.0.1) + Railway's edge (100.64.0.0/10),
 #                            so rate limits/lockouts see the real client IP.
+# railway/entrypoint.sh also makes nginx listen on $PORT (Railway healthcheck).
 ARG BASE_IMAGE=casecite-base:local
 FROM ${BASE_IMAGE}
 ENV DB_SSL=internal \
@@ -19,3 +20,6 @@ ENV DB_SSL=internal \
     CHROMA_PERSIST_DIR=/app/data/chroma \
     UPLOAD_DIR=/app/data/uploads \
     ALLOW_REGISTRATION=false
+COPY railway/entrypoint.sh /railway-entrypoint.sh
+RUN chmod 755 /railway-entrypoint.sh && grep -q 'listen 80;' /etc/nginx/sites-enabled/default
+CMD ["/railway-entrypoint.sh"]
