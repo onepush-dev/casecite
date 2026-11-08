@@ -1,0 +1,38 @@
+name: Publish GHCR
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['Dockerfile', '.github/workflows/publish-ghcr.yml']
+concurrency:
+  group: ghcr
+  cancel-in-progress: true
+permissions:
+  contents: read
+  packages: write
+env:
+  UPSTREAM_REPO: thomasunise/casecite
+  UPSTREAM_REF: v1.3.0
+  IMAGE: ghcr.io/onepush-dev/casecite:1.3.0
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.UPSTREAM_REPO }}
+          ref: ${{ env.UPSTREAM_REF }}
+          path: upstream
+      - name: Build upstream image (upstream root Dockerfile)
+        run: |
+          docker build -t casecite-base:local \
+            --build-arg SOURCE_COMMIT="$(git -C upstream rev-parse HEAD)" upstream
+      - name: Build Railway overlay
+        run: docker build -t "$IMAGE" --build-arg BASE_IMAGE=casecite-base:local .
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: docker push "$IMAGE"
