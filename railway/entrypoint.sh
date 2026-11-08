@@ -13,4 +13,10 @@ if [ -n "${PORT:-}" ] && [ "$PORT" != "80" ]; then
   add_listen "[::]:$PORT"
 fi
 grep -E "^\s*listen" "$CONF" | sed 's/^/railway: nginx /'
+# Railway's healthcheck sends Host: healthcheck.railway.app; let it through
+# CaseCite's TrustedHost allow-list (the app also always allows loopback).
+case ",${ALLOWED_HOSTS:-}," in
+  *,healthcheck.railway.app,*) ;;
+  *) export ALLOWED_HOSTS="${ALLOWED_HOSTS:+$ALLOWED_HOSTS,}healthcheck.railway.app" ;;
+esac
 exec /start.sh "$@"
